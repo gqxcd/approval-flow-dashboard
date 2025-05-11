@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { 
   Home, 
   FileText, 
-  Settings, 
   Users, 
   Calendar, 
   ChevronLeft,
@@ -19,9 +18,18 @@ interface SidebarProps {
 
 const Sidebar = ({ className }: SidebarProps) => {
   const [collapsed, setCollapsed] = useState(false);
+  const [activeSubmenu, setActiveSubmenu] = useState<string | null>("allrequests");
 
   const toggleSidebar = () => {
     setCollapsed(!collapsed);
+  };
+
+  const toggleSubmenu = (menu: string) => {
+    if (activeSubmenu === menu) {
+      setActiveSubmenu(null);
+    } else {
+      setActiveSubmenu(menu);
+    }
   };
 
   return (
@@ -46,27 +54,60 @@ const Sidebar = ({ className }: SidebarProps) => {
       
       <nav className="flex-1 py-4">
         <ul className="space-y-1">
-          {[
-            { icon: Home, label: "Dashboard", active: true },
-            { icon: FileText, label: "Approvals", active: false },
-            { icon: Users, label: "Team", active: false },
-            { icon: Calendar, label: "Calendar", active: false },
-            { icon: Settings, label: "Settings", active: false },
-          ].map((item, index) => (
-            <li key={index}>
-              <Button
-                variant="ghost"
-                className={cn(
-                  "w-full justify-start px-3 py-2 h-10",
-                  collapsed ? "justify-center" : "",
-                  item.active && "bg-slate-200 text-slate-900"
-                )}
-              >
-                <item.icon size={20} className={collapsed ? "mx-auto" : "mr-2"} />
-                {!collapsed && <span>{item.label}</span>}
-              </Button>
-            </li>
-          ))}
+          <li>
+            <Button
+              variant="ghost"
+              className={cn(
+                "w-full justify-start px-3 py-2 h-10",
+                collapsed ? "justify-center" : "",
+                activeSubmenu === "allrequests" && "bg-slate-200 text-slate-900"
+              )}
+              onClick={() => toggleSubmenu("allrequests")}
+            >
+              <FileText size={20} className={collapsed ? "mx-auto" : "mr-2"} />
+              {!collapsed && <span>All Requests</span>}
+            </Button>
+            
+            {!collapsed && activeSubmenu === "allrequests" && (
+              <ul className="pl-8 mt-1 space-y-1">
+                {["HR", "MyIT", "Workday", "Internal Approval"].map((item, idx) => (
+                  <li key={idx}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="w-full justify-start h-8 px-3 text-sm"
+                    >
+                      {item}
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </li>
+          <li>
+            <Button
+              variant="ghost"
+              className={cn(
+                "w-full justify-start px-3 py-2 h-10",
+                collapsed ? "justify-center" : ""
+              )}
+            >
+              <Users size={20} className={collapsed ? "mx-auto" : "mr-2"} />
+              {!collapsed && <span>Team</span>}
+            </Button>
+          </li>
+          <li>
+            <Button
+              variant="ghost"
+              className={cn(
+                "w-full justify-start px-3 py-2 h-10",
+                collapsed ? "justify-center" : ""
+              )}
+            >
+              <Calendar size={20} className={collapsed ? "mx-auto" : "mr-2"} />
+              {!collapsed && <span>Calendar</span>}
+            </Button>
+          </li>
         </ul>
       </nav>
       
