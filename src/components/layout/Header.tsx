@@ -13,6 +13,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu";
 
 interface HeaderProps {
   className?: string;
@@ -36,6 +44,52 @@ const Header = ({ className }: HeaderProps) => {
       <div className="flex items-center gap-6">
         <nav>
           <ul className="hidden md:flex items-center gap-4">
+            <li>
+              <NavigationMenu>
+                <NavigationMenuList>
+                  <NavigationMenuItem>
+                    <NavigationMenuTrigger className="bg-transparent hover:bg-slate-100">
+                      <div className="flex items-center gap-1.5">
+                        <FileText size={18} />
+                        <span className="font-medium">All Requests</span>
+                      </div>
+                    </NavigationMenuTrigger>
+                    <NavigationMenuContent className="bg-white">
+                      <ul className="grid w-[200px] p-2 gap-1">
+                        <li>
+                          <NavigationMenuLink asChild>
+                            <Button variant="ghost" size="sm" className="w-full justify-start">
+                              HR
+                            </Button>
+                          </NavigationMenuLink>
+                        </li>
+                        <li>
+                          <NavigationMenuLink asChild>
+                            <Button variant="ghost" size="sm" className="w-full justify-start">
+                              MyIT
+                            </Button>
+                          </NavigationMenuLink>
+                        </li>
+                        <li>
+                          <NavigationMenuLink asChild>
+                            <Button variant="ghost" size="sm" className="w-full justify-start">
+                              Workday
+                            </Button>
+                          </NavigationMenuLink>
+                        </li>
+                        <li>
+                          <NavigationMenuLink asChild>
+                            <Button variant="ghost" size="sm" className="w-full justify-start">
+                              Internal Approval
+                            </Button>
+                          </NavigationMenuLink>
+                        </li>
+                      </ul>
+                    </NavigationMenuContent>
+                  </NavigationMenuItem>
+                </NavigationMenuList>
+              </NavigationMenu>
+            </li>
             <li>
               <Button variant="ghost" size="sm" className="flex gap-1.5">
                 <FileText size={18} />
