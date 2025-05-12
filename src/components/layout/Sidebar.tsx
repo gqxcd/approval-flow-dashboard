@@ -11,6 +11,7 @@ import {
   ChevronRight
 } from "lucide-react";
 import { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 
 interface SidebarProps {
   className?: string;
@@ -19,6 +20,7 @@ interface SidebarProps {
 const Sidebar = ({ className }: SidebarProps) => {
   const [collapsed, setCollapsed] = useState(false);
   const [activeSubmenu, setActiveSubmenu] = useState<string | null>("allrequests");
+  const location = useLocation();
 
   const toggleSidebar = () => {
     setCollapsed(!collapsed);
@@ -70,14 +72,23 @@ const Sidebar = ({ className }: SidebarProps) => {
             
             {!collapsed && activeSubmenu === "allrequests" && (
               <ul className="pl-8 mt-1 space-y-1">
-                {["HR", "MyIT", "Workday", "Internal Approval"].map((item, idx) => (
+                {[
+                  { name: "HR", path: "/hr" },
+                  { name: "MyIT", path: "/myit" },
+                  { name: "Workday", path: "/workday" },
+                  { name: "Internal Approval", path: "/internal-approval" }
+                ].map((item, idx) => (
                   <li key={idx}>
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="w-full justify-start h-8 px-3 text-sm"
+                      className={cn(
+                        "w-full justify-start h-8 px-3 text-sm",
+                        location.pathname === item.path && "bg-slate-200 text-slate-900"
+                      )}
+                      asChild
                     >
-                      {item}
+                      <Link to={item.path}>{item.name}</Link>
                     </Button>
                   </li>
                 ))}
