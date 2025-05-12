@@ -43,7 +43,7 @@ const Sidebar = ({ className }: SidebarProps) => {
       )}
     >
       <div className="flex items-center justify-between p-4 border-b border-slate-200">
-        {!collapsed && <h2 className="text-xl font-bold">Dashboard</h2>}
+        {!collapsed && <h2 className="text-xl font-bold">All Requests</h2>}
         <Button 
           variant="ghost" 
           size="sm" 
@@ -65,9 +65,19 @@ const Sidebar = ({ className }: SidebarProps) => {
                 activeSubmenu === "allrequests" && "bg-slate-200 text-slate-900"
               )}
               onClick={() => toggleSubmenu("allrequests")}
+              asChild={!activeSubmenu}
             >
-              <FileText size={20} className={collapsed ? "mx-auto" : "mr-2"} />
-              {!collapsed && <span>All Requests</span>}
+              {activeSubmenu !== "allrequests" ? (
+                <Link to="/">
+                  <FileText size={20} className={collapsed ? "mx-auto" : "mr-2"} />
+                  {!collapsed && <span>All Requests</span>}
+                </Link>
+              ) : (
+                <>
+                  <FileText size={20} className={collapsed ? "mx-auto" : "mr-2"} />
+                  {!collapsed && <span>All Requests</span>}
+                </>
+              )}
             </Button>
             
             {!collapsed && activeSubmenu === "allrequests" && (
@@ -102,9 +112,12 @@ const Sidebar = ({ className }: SidebarProps) => {
                 "w-full justify-start px-3 py-2 h-10",
                 collapsed ? "justify-center" : ""
               )}
+              asChild
             >
-              <Users size={20} className={collapsed ? "mx-auto" : "mr-2"} />
-              {!collapsed && <span>Team</span>}
+              <Link to="/">
+                <Users size={20} className={collapsed ? "mx-auto" : "mr-2"} />
+                {!collapsed && <span>Team</span>}
+              </Link>
             </Button>
           </li>
           <li>
@@ -114,9 +127,12 @@ const Sidebar = ({ className }: SidebarProps) => {
                 "w-full justify-start px-3 py-2 h-10",
                 collapsed ? "justify-center" : ""
               )}
+              asChild
             >
-              <Calendar size={20} className={collapsed ? "mx-auto" : "mr-2"} />
-              {!collapsed && <span>Calendar</span>}
+              <Link to="/">
+                <Calendar size={20} className={collapsed ? "mx-auto" : "mr-2"} />
+                {!collapsed && <span>Calendar</span>}
+              </Link>
             </Button>
           </li>
         </ul>

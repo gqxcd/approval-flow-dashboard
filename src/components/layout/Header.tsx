@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Bell, Clock, FileText, Search, Settings, User } from "lucide-react";
+import { Link } from "react-router-dom";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -58,29 +59,29 @@ const Header = ({ className }: HeaderProps) => {
                       <ul className="grid w-[200px] p-2 gap-1">
                         <li>
                           <NavigationMenuLink asChild>
-                            <Button variant="ghost" size="sm" className="w-full justify-start">
-                              HR
+                            <Button variant="ghost" size="sm" className="w-full justify-start" asChild>
+                              <Link to="/hr">HR</Link>
                             </Button>
                           </NavigationMenuLink>
                         </li>
                         <li>
                           <NavigationMenuLink asChild>
-                            <Button variant="ghost" size="sm" className="w-full justify-start">
-                              MyIT
+                            <Button variant="ghost" size="sm" className="w-full justify-start" asChild>
+                              <Link to="/myit">MyIT</Link>
                             </Button>
                           </NavigationMenuLink>
                         </li>
                         <li>
                           <NavigationMenuLink asChild>
-                            <Button variant="ghost" size="sm" className="w-full justify-start">
-                              Workday
+                            <Button variant="ghost" size="sm" className="w-full justify-start" asChild>
+                              <Link to="/workday">Workday</Link>
                             </Button>
                           </NavigationMenuLink>
                         </li>
                         <li>
                           <NavigationMenuLink asChild>
-                            <Button variant="ghost" size="sm" className="w-full justify-start">
-                              Internal Approval
+                            <Button variant="ghost" size="sm" className="w-full justify-start" asChild>
+                              <Link to="/internal-approval">Internal Approval</Link>
                             </Button>
                           </NavigationMenuLink>
                         </li>
@@ -91,21 +92,27 @@ const Header = ({ className }: HeaderProps) => {
               </NavigationMenu>
             </li>
             <li>
-              <Button variant="ghost" size="sm" className="flex gap-1.5">
-                <FileText size={18} />
-                <span className="font-medium">My Requests</span>
+              <Button variant="ghost" size="sm" className="flex gap-1.5" asChild>
+                <Link to="/">
+                  <FileText size={18} />
+                  <span className="font-medium">My Requests</span>
+                </Link>
               </Button>
             </li>
             <li>
-              <Button variant="ghost" size="sm" className="flex gap-1.5">
-                <Clock size={18} />
-                <span className="font-medium">Pending Approval</span>
+              <Button variant="ghost" size="sm" className="flex gap-1.5" asChild>
+                <Link to="/">
+                  <Clock size={18} />
+                  <span className="font-medium">Pending Approval</span>
+                </Link>
               </Button>
             </li>
             <li>
-              <Button variant="ghost" size="sm" className="flex gap-1.5">
-                <Settings size={18} />
-                <span>Settings</span>
+              <Button variant="ghost" size="sm" className="flex gap-1.5" asChild>
+                <Link to="/">
+                  <Settings size={18} />
+                  <span>Settings</span>
+                </Link>
               </Button>
             </li>
           </ul>
