@@ -14,6 +14,8 @@ export interface TpcTask {
   quantity: number;
   requestedSubmitted: string;
   status: 'pending' | 'approved' | 'rejected';
+  suggestion: 'approval' | 'decline';
+  suggestionReason: string;
 }
 
 const InternalApproval = () => {
@@ -28,7 +30,9 @@ const InternalApproval = () => {
       action: 'Buy',
       quantity: 100,
       requestedSubmitted: '2025-05-10',
-      status: 'pending'
+      status: 'pending',
+      suggestion: 'approval',
+      suggestionReason: 'Strong technical indicators and positive market sentiment for Apple.'
     },
     {
       id: '2',
@@ -37,7 +41,9 @@ const InternalApproval = () => {
       action: 'Sell',
       quantity: 50,
       requestedSubmitted: '2025-05-09',
-      status: 'pending'
+      status: 'pending',
+      suggestion: 'decline',
+      suggestionReason: 'Rising interest rate environment suggests holding bonds longer would be more advantageous.'
     },
     {
       id: '3',
@@ -46,7 +52,9 @@ const InternalApproval = () => {
       action: 'Buy',
       quantity: 25,
       requestedSubmitted: '2025-05-08',
-      status: 'approved'
+      status: 'approved',
+      suggestion: 'approval',
+      suggestionReason: 'Aligns with current portfolio diversification strategy and market outlook.'
     },
     {
       id: '4',
@@ -55,7 +63,9 @@ const InternalApproval = () => {
       action: 'Sell',
       quantity: 10,
       requestedSubmitted: '2025-05-07',
-      status: 'rejected'
+      status: 'rejected',
+      suggestion: 'decline',
+      suggestionReason: 'High volatility and recent price action suggest increased risk for this position.'
     },
     {
       id: '5',
@@ -64,7 +74,9 @@ const InternalApproval = () => {
       action: 'Buy',
       quantity: 5,
       requestedSubmitted: '2025-05-06',
-      status: 'pending'
+      status: 'pending',
+      suggestion: 'approval',
+      suggestionReason: 'Matches current market momentum and aligns with strategic asset allocation targets.'
     },
   ];
 
