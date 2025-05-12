@@ -4,7 +4,8 @@ import MainLayout from '@/components/layout/MainLayout';
 import { Button } from "@/components/ui/button";
 import TpcTasksCardView from '@/components/tpc/TpcTasksCardView';
 import TpcTasksTableView from '@/components/tpc/TpcTasksTableView';
-import { FileText, LayoutGrid } from 'lucide-react';
+import { Check, FileText, LayoutGrid, X } from 'lucide-react';
+import { toast } from 'sonner';
 
 export interface TpcTask {
   id: string;
@@ -20,6 +21,7 @@ export interface TpcTask {
 
 const InternalApproval = () => {
   const [viewType, setViewType] = useState<'card' | 'table'>('card');
+  const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
   
   // Sample data for TPC tasks
   const tpcTasks: TpcTask[] = [
@@ -80,6 +82,41 @@ const InternalApproval = () => {
     },
   ];
 
+  const handleToggleSelectAll = (checked: boolean) => {
+    if (checked) {
+      // Only select pending tasks
+      const pendingTaskIds = tpcTasks
+        .filter(task => task.status === 'pending')
+        .map(task => task.id);
+      setSelectedTasks(pendingTaskIds);
+    } else {
+      setSelectedTasks([]);
+    }
+  };
+
+  const handleToggleSelectTask = (taskId: string, checked: boolean) => {
+    if (checked) {
+      setSelectedTasks(prev => [...prev, taskId]);
+    } else {
+      setSelectedTasks(prev => prev.filter(id => id !== taskId));
+    }
+  };
+
+  const handleBulkAction = (action: 'approve' | 'reject') => {
+    if (selectedTasks.length === 0) {
+      toast(`No tasks selected for ${action}`);
+      return;
+    }
+
+    // In a real app, this would call an API to update the tasks
+    toast(`${selectedTasks.length} tasks ${action === 'approve' ? 'approved' : 'rejected'}`);
+    
+    // Clear selections after action
+    setSelectedTasks([]);
+  };
+
+  const isPendingSelected = selectedTasks.length > 0;
+
   return (
     <MainLayout>
       <div className="mb-6">
@@ -88,8 +125,29 @@ const InternalApproval = () => {
       </div>
       
       <div className="flex justify-between items-center mb-6">
-        <div className="text-sm text-slate-500">
-          {tpcTasks.length} task{tpcTasks.length !== 1 ? 's' : ''} found
+        <div className="flex items-center gap-4">
+          <div className="text-sm text-slate-500">
+            {tpcTasks.length} task{tpcTasks.length !== 1 ? 's' : ''} found
+          </div>
+          {isPendingSelected && (
+            <div className="flex gap-2">
+              <Button 
+                size="sm"
+                variant="outline"
+                className="border-red-200 text-red-600 hover:bg-red-50"
+                onClick={() => handleBulkAction('reject')}
+              >
+                <X size={16} className="mr-1" /> Reject {selectedTasks.length} Tasks
+              </Button>
+              <Button 
+                size="sm"
+                className="bg-green-600 hover:bg-green-700"
+                onClick={() => handleBulkAction('approve')}
+              >
+                <Check size={16} className="mr-1" /> Approve {selectedTasks.length} Tasks
+              </Button>
+            </div>
+          )}
         </div>
         <div className="flex space-x-2">
           <Button 
@@ -112,9 +170,18 @@ const InternalApproval = () => {
       </div>
       
       {viewType === 'card' ? (
-        <TpcTasksCardView tasks={tpcTasks} />
+        <TpcTasksCardView 
+          tasks={tpcTasks} 
+          selectedTasks={selectedTasks}
+          onSelectTask={handleToggleSelectTask}
+        />
       ) : (
-        <TpcTasksTableView tasks={tpcTasks} />
+        <TpcTasksTableView 
+          tasks={tpcTasks} 
+          selectedTasks={selectedTasks}
+          onSelectTask={handleToggleSelectTask}
+          onSelectAll={handleToggleSelectAll}
+        />
       )}
     </MainLayout>
   );

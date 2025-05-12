@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Check, X, ArrowRight, ArrowLeft, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
@@ -22,6 +23,9 @@ import {
 
 interface TpcTasksTableViewProps {
   tasks: TpcTask[];
+  selectedTasks: string[];
+  onSelectTask: (taskId: string, checked: boolean) => void;
+  onSelectAll: (checked: boolean) => void;
 }
 
 const actionConfig = {
@@ -50,13 +54,23 @@ const suggestionConfig = {
   }
 };
 
-const TpcTasksTableView = ({ tasks }: TpcTasksTableViewProps) => {
+const TpcTasksTableView = ({ tasks, selectedTasks, onSelectTask, onSelectAll }: TpcTasksTableViewProps) => {
+  const pendingTasks = tasks.filter(task => task.status === 'pending');
+  const allPendingSelected = pendingTasks.length > 0 && pendingTasks.every(task => selectedTasks.includes(task.id));
+  
   return (
     <TooltipProvider>
       <div className="border rounded-md overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-12">
+                <Checkbox 
+                  checked={allPendingSelected && pendingTasks.length > 0} 
+                  onCheckedChange={onSelectAll}
+                  disabled={pendingTasks.length === 0}
+                />
+              </TableHead>
               <TableHead>Product Type</TableHead>
               <TableHead>Product Name</TableHead>
               <TableHead>Action</TableHead>
@@ -72,9 +86,17 @@ const TpcTasksTableView = ({ tasks }: TpcTasksTableViewProps) => {
               const ActionIcon = actionConfig[task.action].icon;
               const { color, label } = statusConfig[task.status];
               const suggestion = suggestionConfig[task.suggestion];
+              const isPending = task.status === 'pending';
               
               return (
                 <TableRow key={task.id}>
+                  <TableCell>
+                    <Checkbox 
+                      checked={selectedTasks.includes(task.id)} 
+                      onCheckedChange={(checked) => onSelectTask(task.id, !!checked)}
+                      disabled={!isPending}
+                    />
+                  </TableCell>
                   <TableCell>{task.productType}</TableCell>
                   <TableCell className="font-medium">{task.productName}</TableCell>
                   <TableCell>

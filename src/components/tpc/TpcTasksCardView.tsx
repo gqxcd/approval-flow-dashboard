@@ -4,11 +4,14 @@ import { TpcTask } from '@/pages/InternalApproval';
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Check, X, ArrowRight, ArrowLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface TpcTasksCardViewProps {
   tasks: TpcTask[];
+  selectedTasks: string[];
+  onSelectTask: (taskId: string, checked: boolean) => void;
 }
 
 const actionConfig = {
@@ -22,20 +25,29 @@ const statusConfig = {
   rejected: { color: 'bg-red-100 text-red-800 border-red-200', label: 'Rejected' },
 };
 
-const TpcTasksCardView = ({ tasks }: TpcTasksCardViewProps) => {
+const TpcTasksCardView = ({ tasks, selectedTasks, onSelectTask }: TpcTasksCardViewProps) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {tasks.map((task) => {
         const ActionIcon = actionConfig[task.action].icon;
         const { color, label } = statusConfig[task.status];
+        const isPending = task.status === 'pending';
         
         return (
           <Card key={task.id} className="h-full overflow-hidden">
             <CardHeader className="pb-2">
               <div className="flex justify-between items-start">
-                <Badge className={cn("font-medium", color)}>
-                  {label}
-                </Badge>
+                <div className="flex items-center gap-2">
+                  {isPending && (
+                    <Checkbox 
+                      checked={selectedTasks.includes(task.id)} 
+                      onCheckedChange={(checked) => onSelectTask(task.id, !!checked)} 
+                    />
+                  )}
+                  <Badge className={cn("font-medium", color)}>
+                    {label}
+                  </Badge>
+                </div>
                 <Badge variant="outline" className="font-medium">
                   {task.productType}
                 </Badge>
