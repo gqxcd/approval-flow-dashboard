@@ -14,12 +14,12 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 
 interface TpcTasksCardViewProps {
   tasks: TpcTask[];
@@ -55,11 +55,11 @@ const suggestionConfig = {
 
 const TpcTasksCardView = ({ tasks, selectedTasks, onSelectTask }: TpcTasksCardViewProps) => {
   const [selectedTask, setSelectedTask] = useState<TpcTask | null>(null);
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
   
   const handleViewTask = (task: TpcTask) => {
     setSelectedTask(task);
-    setDialogOpen(true);
+    setSheetOpen(true);
   };
   
   return (
@@ -93,7 +93,7 @@ const TpcTasksCardView = ({ tasks, selectedTasks, onSelectTask }: TpcTasksCardVi
                 <div className="mt-2">
                   <Button 
                     variant="link" 
-                    className="p-0 h-auto font-semibold text-lg justify-start text-left"
+                    className="p-0 h-auto font-semibold text-lg justify-start text-left cursor-pointer"
                     onClick={() => handleViewTask(task)}
                   >
                     <span className="truncate max-w-full block">{task.productName}</span>
@@ -148,7 +148,7 @@ const TpcTasksCardView = ({ tasks, selectedTasks, onSelectTask }: TpcTasksCardVi
                 ) : (
                   <Button 
                     variant="outline" 
-                    className="w-full"
+                    className="w-full cursor-pointer"
                     onClick={() => handleViewTask(task)}
                   >
                     <span className="truncate">View Details</span>
@@ -161,19 +161,24 @@ const TpcTasksCardView = ({ tasks, selectedTasks, onSelectTask }: TpcTasksCardVi
         })}
       </div>
       
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+      <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
         {selectedTask && (
-          <DialogContent className="sm:max-w-[600px]">
-            <DialogHeader>
-              <DialogTitle className="text-xl">{selectedTask.productName} ({selectedTask.productType})</DialogTitle>
-              <DialogDescription>
-                Task ID: {selectedTask.id}
-              </DialogDescription>
-            </DialogHeader>
+          <SheetContent className="w-full sm:max-w-md overflow-y-auto">
+            <SheetHeader>
+              <SheetTitle className="text-xl">{selectedTask.productName}</SheetTitle>
+              <SheetDescription>
+                {selectedTask.productType} • Task ID: {selectedTask.id}
+              </SheetDescription>
+            </SheetHeader>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-4">
-              <div>
-                <h3 className="font-medium text-lg mb-2">Request Details</h3>
+            <div className="py-6 space-y-6">
+              <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                <h3 className="font-medium text-lg mb-3 flex items-center">
+                  <Badge className={cn("mr-2", statusConfig[selectedTask.status].color)}>
+                    {statusConfig[selectedTask.status].label}
+                  </Badge>
+                  Request Details
+                </h3>
                 <div className="space-y-3">
                   <div className="grid grid-cols-2 gap-1">
                     <span className="text-sm text-slate-500">Product Type:</span>
@@ -210,18 +215,12 @@ const TpcTasksCardView = ({ tasks, selectedTasks, onSelectTask }: TpcTasksCardVi
                       {new Date(selectedTask.requestedSubmitted).toLocaleDateString()}
                     </span>
                   </div>
-                  <div className="grid grid-cols-2 gap-1">
-                    <span className="text-sm text-slate-500">Status:</span>
-                    <Badge className={cn("font-medium w-fit", statusConfig[selectedTask.status].color)}>
-                      {statusConfig[selectedTask.status].label}
-                    </Badge>
-                  </div>
                 </div>
               </div>
               
-              <div className="border-t md:border-t-0 md:border-l pt-4 md:pt-0 md:pl-6">
-                <h3 className="font-medium text-lg mb-2">AI Suggestion</h3>
-                <div className="p-3 rounded-md border border-slate-200 bg-slate-50">
+              <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                <h3 className="font-medium text-lg mb-3">AI Suggestion</h3>
+                <div className={cn("p-3 rounded-md border", selectedTask.suggestion === 'approval' ? "border-green-100 bg-green-50" : "border-red-100 bg-red-50")}>
                   <div className={cn("text-sm mb-2 font-medium", suggestionConfig[selectedTask.suggestion].color)}>
                     {suggestionConfig[selectedTask.suggestion].label}
                   </div>
@@ -231,21 +230,21 @@ const TpcTasksCardView = ({ tasks, selectedTasks, onSelectTask }: TpcTasksCardVi
             </div>
             
             {selectedTask.status === 'pending' && (
-              <div className="flex justify-end gap-3 mt-4 border-t pt-4">
+              <div className="flex justify-between gap-3 mt-4 border-t pt-4">
                 <Button 
                   variant="outline"
-                  className="border-red-200 text-red-600 hover:bg-red-50"
+                  className="border-red-200 text-red-600 hover:bg-red-50 flex-1"
                 >
-                  <X size={16} className="mr-2" /> Decline Request
+                  <X size={16} className="mr-2" /> Decline
                 </Button>
-                <Button className="bg-green-600 hover:bg-green-700">
-                  <Check size={16} className="mr-2" /> Approve Request
+                <Button className="bg-green-600 hover:bg-green-700 flex-1">
+                  <Check size={16} className="mr-2" /> Approve
                 </Button>
               </div>
             )}
-          </DialogContent>
+          </SheetContent>
         )}
-      </Dialog>
+      </Sheet>
     </TooltipProvider>
   );
 };
