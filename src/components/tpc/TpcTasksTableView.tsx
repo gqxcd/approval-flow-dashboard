@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { TpcTask } from '@/pages/InternalApproval';
 import { 
   Table, 
@@ -12,7 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Check, X, ArrowRight, ArrowLeft, Info } from 'lucide-react';
+import { Check, X, ArrowRight, ArrowLeft, Info, MoreHorizontal } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   Tooltip,
@@ -20,6 +20,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface TpcTasksTableViewProps {
   tasks: TpcTask[];
@@ -55,8 +62,16 @@ const suggestionConfig = {
 };
 
 const TpcTasksTableView = ({ tasks, selectedTasks, onSelectTask, onSelectAll }: TpcTasksTableViewProps) => {
+  const [selectedTask, setSelectedTask] = useState<TpcTask | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  
   const pendingTasks = tasks.filter(task => task.status === 'pending');
   const allPendingSelected = pendingTasks.length > 0 && pendingTasks.every(task => selectedTasks.includes(task.id));
+  
+  const handleViewTask = (task: TpcTask) => {
+    setSelectedTask(task);
+    setDialogOpen(true);
+  };
   
   return (
     <TooltipProvider>
@@ -98,7 +113,15 @@ const TpcTasksTableView = ({ tasks, selectedTasks, onSelectTask, onSelectAll }: 
                     />
                   </TableCell>
                   <TableCell>{task.productType}</TableCell>
-                  <TableCell className="font-medium">{task.productName}</TableCell>
+                  <TableCell className="font-medium">
+                    <Button 
+                      variant="link" 
+                      className="p-0 h-auto font-medium text-left justify-start"
+                      onClick={() => handleViewTask(task)}
+                    >
+                      <span className="truncate max-w-[150px] block">{task.productName}</span>
+                    </Button>
+                  </TableCell>
                   <TableCell>
                     <div className="flex items-center">
                       <ActionIcon className={actionConfig[task.action].color} size={16} />
@@ -117,7 +140,7 @@ const TpcTasksTableView = ({ tasks, selectedTasks, onSelectTask, onSelectAll }: 
                   <TableCell>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <div className={cn("flex items-center gap-1", suggestion.color, suggestion.bgHover, "rounded px-2 py-1 cursor-help")}>
+                        <div className={cn("flex items-center gap-1", suggestion.color, suggestion.bgHover, "rounded px-2 py-1 cursor-pointer")}>
                           {suggestion.label}
                           <Info size={14} className="ml-1" />
                         </div>
@@ -135,18 +158,31 @@ const TpcTasksTableView = ({ tasks, selectedTasks, onSelectTask, onSelectAll }: 
                           size="sm"
                           className="border-red-200 text-red-600 hover:bg-red-50"
                         >
-                          <X size={16} /> <span className="sr-only">Decline</span>
+                          <X size={16} /> <span className="hidden sm:inline">Decline</span>
                         </Button>
                         <Button 
                           size="sm"
                           className="bg-green-600 hover:bg-green-700"
                         >
-                          <Check size={16} /> <span className="sr-only">Approve</span>
+                          <Check size={16} /> <span className="hidden sm:inline">Approve</span>
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => handleViewTask(task)}
+                          className="sm:hidden"
+                        >
+                          <MoreHorizontal size={16} />
                         </Button>
                       </div>
                     ) : (
-                      <Button variant="outline" size="sm">
-                        View
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => handleViewTask(task)}
+                      >
+                        <span className="hidden sm:inline">View</span>
+                        <MoreHorizontal size={16} className="sm:hidden" />
                       </Button>
                     )}
                   </TableCell>
@@ -156,6 +192,85 @@ const TpcTasksTableView = ({ tasks, selectedTasks, onSelectTask, onSelectAll }: 
           </TableBody>
         </Table>
       </div>
+      
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        {selectedTask && (
+          <DialogContent className="sm:max-w-[600px]">
+            <DialogHeader>
+              <DialogTitle className="text-xl">{selectedTask.productName} ({selectedTask.productType})</DialogTitle>
+              <DialogDescription>
+                Task ID: {selectedTask.id}
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-4">
+              <div>
+                <h3 className="font-medium text-lg mb-2">Request Details</h3>
+                <div className="space-y-3">
+                  <div className="grid grid-cols-2 gap-1">
+                    <span className="text-sm text-slate-500">Product Type:</span>
+                    <span className="text-sm font-medium">{selectedTask.productType}</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-1">
+                    <span className="text-sm text-slate-500">Action:</span>
+                    <div className="flex items-center">
+                      {actionConfig[selectedTask.action].icon && (
+                        <selectedTask.action === 'Buy' ? ArrowRight : ArrowLeft 
+                          className={actionConfig[selectedTask.action].color}
+                          size={16}
+                        />
+                      )}
+                      <span className={cn("ml-1 text-sm", actionConfig[selectedTask.action].color)}>
+                        {selectedTask.action}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-1">
+                    <span className="text-sm text-slate-500">Quantity:</span>
+                    <span className="text-sm font-medium">{selectedTask.quantity}</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-1">
+                    <span className="text-sm text-slate-500">Date Submitted:</span>
+                    <span className="text-sm font-medium">
+                      {new Date(selectedTask.requestedSubmitted).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-1">
+                    <span className="text-sm text-slate-500">Status:</span>
+                    <Badge className={cn("font-medium w-fit", statusConfig[selectedTask.status].color)}>
+                      {statusConfig[selectedTask.status].label}
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="border-t md:border-t-0 md:border-l pt-4 md:pt-0 md:pl-6">
+                <h3 className="font-medium text-lg mb-2">AI Suggestion</h3>
+                <div className="p-3 rounded-md border border-slate-200 bg-slate-50">
+                  <div className={cn("text-sm mb-2 font-medium", suggestionConfig[selectedTask.suggestion].color)}>
+                    {suggestionConfig[selectedTask.suggestion].label}
+                  </div>
+                  <p className="text-sm text-slate-600">{selectedTask.suggestionReason}</p>
+                </div>
+              </div>
+            </div>
+            
+            {selectedTask.status === 'pending' && (
+              <div className="flex justify-end gap-3 mt-4 border-t pt-4">
+                <Button 
+                  variant="outline"
+                  className="border-red-200 text-red-600 hover:bg-red-50"
+                >
+                  <X size={16} className="mr-2" /> Decline Request
+                </Button>
+                <Button className="bg-green-600 hover:bg-green-700">
+                  <Check size={16} className="mr-2" /> Approve Request
+                </Button>
+              </div>
+            )}
+          </DialogContent>
+        )}
+      </Dialog>
     </TooltipProvider>
   );
 };

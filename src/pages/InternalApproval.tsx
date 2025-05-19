@@ -80,6 +80,17 @@ const InternalApproval = () => {
       suggestion: 'approval',
       suggestionReason: 'Matches current market momentum and aligns with strategic asset allocation targets.'
     },
+    {
+      id: '6',
+      productType: 'Forex',
+      productName: 'EUR/USD Currency Pair',
+      action: 'Sell',
+      quantity: 75,
+      requestedSubmitted: '2025-05-05',
+      status: 'pending',
+      suggestion: 'approval',
+      suggestionReason: 'Expected divergence in monetary policy between ECB and Federal Reserve suggests potential for USD strength.'
+    },
   ];
 
   const handleToggleSelectAll = (checked: boolean) => {
@@ -137,14 +148,14 @@ const InternalApproval = () => {
                 className="border-red-200 text-red-600 hover:bg-red-50"
                 onClick={() => handleBulkAction('reject')}
               >
-                <X size={16} className="mr-1" /> Reject {selectedTasks.length} Tasks
+                <X size={16} className="mr-1" /> <span className="hidden xs:inline">Reject</span> {selectedTasks.length}
               </Button>
               <Button 
                 size="sm"
                 className="bg-green-600 hover:bg-green-700"
                 onClick={() => handleBulkAction('approve')}
               >
-                <Check size={16} className="mr-1" /> Approve {selectedTasks.length} Tasks
+                <Check size={16} className="mr-1" /> <span className="hidden xs:inline">Approve</span> {selectedTasks.length}
               </Button>
             </div>
           )}
@@ -156,7 +167,7 @@ const InternalApproval = () => {
             onClick={() => setViewType('card')}
           >
             <LayoutGrid size={16} className="mr-2" />
-            Card View
+            <span className="hidden sm:inline">Card View</span>
           </Button>
           <Button 
             variant={viewType === 'table' ? 'default' : 'outline'} 
@@ -164,7 +175,7 @@ const InternalApproval = () => {
             onClick={() => setViewType('table')}
           >
             <FileText size={16} className="mr-2" />
-            Table View
+            <span className="hidden sm:inline">Table View</span>
           </Button>
         </div>
       </div>
