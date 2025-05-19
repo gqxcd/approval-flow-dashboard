@@ -183,10 +183,17 @@ const TpcTasksCardView = ({ tasks, selectedTasks, onSelectTask }: TpcTasksCardVi
                     <span className="text-sm text-slate-500">Action:</span>
                     <div className="flex items-center">
                       {actionConfig[selectedTask.action].icon && (
-                        <selectedTask.action === 'Buy' ? ArrowRight : ArrowLeft 
-                          className={actionConfig[selectedTask.action].color}
-                          size={16}
-                        />
+                        selectedTask.action === 'Buy' ? (
+                          <ArrowRight 
+                            className={actionConfig[selectedTask.action].color}
+                            size={16}
+                          />
+                        ) : (
+                          <ArrowLeft 
+                            className={actionConfig[selectedTask.action].color}
+                            size={16}
+                          />
+                        )
                       )}
                       <span className={cn("ml-1 text-sm", actionConfig[selectedTask.action].color)}>
                         {selectedTask.action}
