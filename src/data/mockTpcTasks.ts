@@ -1,7 +1,6 @@
-
 import { TpcTask } from '@/pages/InternalApproval';
 
-export const mockTpcTasks: TpcTask[] = [
+const mockTpcTasksData: TpcTask[] = [
   {
     id: '1',
     productType: 'Equity',
@@ -69,3 +68,15 @@ export const mockTpcTasks: TpcTask[] = [
     suggestionReason: 'Expected divergence in monetary policy between ECB and Federal Reserve suggests potential for USD strength.'
   },
 ];
+
+// Simulate API call with async/await
+export const fetchTpcTasks = async (): Promise<TpcTask[]> => {
+  // Simulate network delay
+  await new Promise(resolve => setTimeout(resolve, 500));
+  
+  console.log('Fetching TPC tasks from mock API...');
+  return mockTpcTasksData;
+};
+
+// Keep the original export for backward compatibility
+export const mockTpcTasks = mockTpcTasksData;

@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import { Button } from "@/components/ui/button";
 import TpcTasksCardView from '@/components/tpc/TpcTasksCardView';
 import TpcTasksTableView from '@/components/tpc/TpcTasksTableView';
 import { Check, FileText, LayoutGrid, X } from 'lucide-react';
 import { toast } from 'sonner';
-import { mockTpcTasks } from '@/data/mockTpcTasks';
+import { fetchTpcTasks } from '@/data/mockTpcTasks';
 
 export interface TpcTask {
   id: string;
@@ -22,9 +22,28 @@ export interface TpcTask {
 const InternalApproval = () => {
   const [viewType, setViewType] = useState<'card' | 'table'>('card');
   const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
-  
-  // Use imported mock data
-  const tpcTasks: TpcTask[] = mockTpcTasks;
+  const [tpcTasks, setTpcTasks] = useState<TpcTask[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Fetch data using async/await
+  useEffect(() => {
+    const loadTasks = async () => {
+      try {
+        setIsLoading(true);
+        console.log('Loading TPC tasks...');
+        const tasks = await fetchTpcTasks();
+        setTpcTasks(tasks);
+        console.log('TPC tasks loaded successfully:', tasks.length, 'tasks');
+      } catch (error) {
+        console.error('Error loading TPC tasks:', error);
+        toast('Failed to load tasks');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadTasks();
+  }, []);
 
   const handleToggleSelectAll = (checked: boolean) => {
     if (checked) {
@@ -60,6 +79,20 @@ const InternalApproval = () => {
   };
 
   const isPendingSelected = selectedTasks.length > 0;
+
+  if (isLoading) {
+    return (
+      <MainLayout>
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold">Internal Approval</h1>
+          <p className="text-slate-500">Manage TPC task approvals</p>
+        </div>
+        <div className="flex justify-center items-center h-64">
+          <div className="text-slate-500">Loading tasks...</div>
+        </div>
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout>
