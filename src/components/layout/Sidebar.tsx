@@ -8,7 +8,8 @@ import {
   Users, 
   Calendar, 
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Bot
 } from "lucide-react";
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
@@ -104,6 +105,22 @@ const Sidebar = ({ className }: SidebarProps) => {
                 ))}
               </ul>
             )}
+          </li>
+          <li>
+            <Button
+              variant="ghost"
+              className={cn(
+                "w-full justify-start px-3 py-2 h-10",
+                collapsed ? "justify-center" : "",
+                location.pathname === "/policy-bot" && "bg-slate-200 text-slate-900"
+              )}
+              asChild
+            >
+              <Link to="/policy-bot">
+                <Bot size={20} className={collapsed ? "mx-auto" : "mr-2"} />
+                {!collapsed && <span>PolicyBot</span>}
+              </Link>
+            </Button>
           </li>
           <li>
             <Button
