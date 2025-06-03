@@ -9,6 +9,7 @@ import NotFound from "./pages/NotFound";
 import InternalApproval from "./pages/InternalApproval";
 import PolicyBotPage from "./pages/PolicyBot";
 import MyItPage from "./pages/MyItPage";
+import HrPage from "./pages/HrPage";
 
 const queryClient = new QueryClient();
 
@@ -20,6 +21,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/hr" element={<HrPage />} />
           <Route path="/myit" element={<MyItPage />} />
           <Route path="/internal-approval" element={<InternalApproval />} />
           <Route path="/policy-bot" element={<PolicyBotPage />} />
