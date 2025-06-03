@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import InternalApproval from "./pages/InternalApproval";
 import PolicyBotPage from "./pages/PolicyBot";
+import MyItPage from "./pages/MyItPage";
 
 const queryClient = new QueryClient();
 
@@ -19,6 +20,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/myit" element={<MyItPage />} />
           <Route path="/internal-approval" element={<InternalApproval />} />
           <Route path="/policy-bot" element={<PolicyBotPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
