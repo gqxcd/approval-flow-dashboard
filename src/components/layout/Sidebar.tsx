@@ -86,7 +86,6 @@ const Sidebar = ({ className }: SidebarProps) => {
                 {[
                   { name: "HR", path: "/hr" },
                   { name: "MyIT", path: "/myit" },
-                  { name: "Workday", path: "/workday" },
                   { name: "Internal Approval", path: "/internal-approval" }
                 ].map((item, idx) => (
                   <li key={idx}>
