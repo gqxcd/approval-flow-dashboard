@@ -1,4 +1,5 @@
-import { TpcTask } from '@/pages/InternalApproval';
+
+import { TpcTask } from '@/types/tpc';
 
 const mockTpcTasksData: TpcTask[] = [
   {

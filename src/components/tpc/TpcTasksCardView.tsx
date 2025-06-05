@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { TpcTask } from '@/pages/InternalApproval';
+import { TpcTask } from '@/types/tpc';
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

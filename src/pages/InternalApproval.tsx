@@ -1,14 +1,11 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import TpcTasksTableView from '@/components/tpc/TpcTasksTableView';
-import TpcTasksCardView from '@/components/tpc/TpcTasksCardView';
+import TpcTasksWrapper from '@/components/tpc/TpcTasksWrapper';
 import RecertificationTasksView from '@/components/recertification/RecertificationTasksView';
 
 const InternalApproval = () => {
-  const [viewMode, setViewMode] = useState<'table' | 'card'>('table');
-
   return (
     <MainLayout>
       <div className="space-y-6">
@@ -24,11 +21,7 @@ const InternalApproval = () => {
           </TabsList>
           
           <TabsContent value="tpc" className="space-y-4">
-            {viewMode === 'table' ? (
-              <TpcTasksTableView onViewModeChange={setViewMode} />
-            ) : (
-              <TpcTasksCardView onViewModeChange={setViewMode} />
-            )}
+            <TpcTasksWrapper />
           </TabsContent>
           
           <TabsContent value="recertification" className="space-y-4">
