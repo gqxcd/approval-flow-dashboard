@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import { fetchMyItTasks, MyItTask } from '@/data/mockMyItTasks';
@@ -48,7 +47,7 @@ const MyItPage = () => {
 
   const handleReject = (taskId: string) => {
     setMyItTasks(prev => prev.map(task => 
-      task.id === taskId ? { ...task, status: 'on-hold' as const } : task
+      task.id === taskId ? { ...task, status: 'rejected' as const } : task
     ));
     toast('Task rejected');
   };
