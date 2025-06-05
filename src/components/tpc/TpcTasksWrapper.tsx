@@ -3,7 +3,8 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { fetchTpcTasks } from '@/data/mockTpcTasks';
 import { Button } from "@/components/ui/button";
-import { Grid, List } from 'lucide-react';
+import { Grid, List, Check, X } from 'lucide-react';
+import { toast } from 'sonner';
 import TpcTasksTableView from './TpcTasksTableView';
 import TpcTasksCardView from './TpcTasksCardView';
 
@@ -27,6 +28,24 @@ const TpcTasksWrapper = () => {
   const handleSelectAll = (checked: boolean) => {
     const pendingTasks = tasks.filter(task => task.status === 'pending');
     setSelectedTasks(checked ? pendingTasks.map(task => task.id) : []);
+  };
+
+  const handleBulkApprove = () => {
+    if (selectedTasks.length === 0) return;
+    
+    // Here you would typically call an API to approve the tasks
+    console.log('Bulk approving tasks:', selectedTasks);
+    toast(`${selectedTasks.length} task(s) approved successfully`);
+    setSelectedTasks([]);
+  };
+
+  const handleBulkReject = () => {
+    if (selectedTasks.length === 0) return;
+    
+    // Here you would typically call an API to reject the tasks
+    console.log('Bulk rejecting tasks:', selectedTasks);
+    toast(`${selectedTasks.length} task(s) rejected`);
+    setSelectedTasks([]);
   };
 
   if (isLoading) {
@@ -58,11 +77,33 @@ const TpcTasksWrapper = () => {
             Cards
           </Button>
         </div>
-        {selectedTasks.length > 0 && (
-          <div className="text-sm text-slate-600">
-            {selectedTasks.length} task(s) selected
-          </div>
-        )}
+        
+        <div className="flex items-center gap-2">
+          {selectedTasks.length > 0 && (
+            <>
+              <div className="text-sm text-slate-600">
+                {selectedTasks.length} task(s) selected
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-red-200 text-red-600 hover:bg-red-50"
+                onClick={handleBulkReject}
+              >
+                <X size={16} className="mr-1" />
+                Reject Selected
+              </Button>
+              <Button
+                size="sm"
+                className="bg-green-600 hover:bg-green-700"
+                onClick={handleBulkApprove}
+              >
+                <Check size={16} className="mr-1" />
+                Approve Selected
+              </Button>
+            </>
+          )}
+        </div>
       </div>
 
       {viewMode === 'table' ? (

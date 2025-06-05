@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import { fetchHrTasks, HrTask } from '@/data/mockHrTasks';
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Check, X, Eye } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -17,6 +18,7 @@ const HrPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedTask, setSelectedTask] = useState<HrTask | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
 
   useEffect(() => {
     const loadTasks = async () => {
@@ -38,6 +40,21 @@ const HrPage = () => {
     loadTasks();
   }, []);
 
+  const handleSelectTask = (taskId: string, checked: boolean) => {
+    setSelectedTasks(prev => 
+      checked 
+        ? [...prev, taskId]
+        : prev.filter(id => id !== taskId)
+    );
+  };
+
+  const handleSelectAll = (checked: boolean) => {
+    const approvableRejectableTasks = hrTasks.filter(task => 
+      task.status === 'pending' || task.status === 'in-progress'
+    );
+    setSelectedTasks(checked ? approvableRejectableTasks.map(task => task.id) : []);
+  };
+
   const handleApprove = (taskId: string) => {
     setHrTasks(prev => prev.map(task => 
       task.id === taskId ? { ...task, status: 'completed' as const } : task
@@ -52,10 +69,36 @@ const HrPage = () => {
     toast('Task rejected');
   };
 
+  const handleBulkApprove = () => {
+    if (selectedTasks.length === 0) return;
+    
+    setHrTasks(prev => prev.map(task => 
+      selectedTasks.includes(task.id) ? { ...task, status: 'completed' as const } : task
+    ));
+    toast(`${selectedTasks.length} task(s) approved successfully`);
+    setSelectedTasks([]);
+  };
+
+  const handleBulkReject = () => {
+    if (selectedTasks.length === 0) return;
+    
+    setHrTasks(prev => prev.map(task => 
+      selectedTasks.includes(task.id) ? { ...task, status: 'rejected' as const } : task
+    ));
+    toast(`${selectedTasks.length} task(s) rejected`);
+    setSelectedTasks([]);
+  };
+
   const handleViewDetails = (task: HrTask) => {
     setSelectedTask(task);
     setSheetOpen(true);
   };
+
+  const approvableRejectableTasks = hrTasks.filter(task => 
+    task.status === 'pending' || task.status === 'in-progress'
+  );
+  const allSelected = approvableRejectableTasks.length > 0 && 
+    approvableRejectableTasks.every(task => selectedTasks.includes(task.id));
 
   if (isLoading) {
     return (
@@ -79,8 +122,44 @@ const HrPage = () => {
       </div>
       
       <div className="space-y-6">
-        <div className="text-sm text-slate-500">
-          {hrTasks.length} task{hrTasks.length !== 1 ? 's' : ''} found
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <Checkbox 
+                checked={allSelected} 
+                onCheckedChange={handleSelectAll}
+                disabled={approvableRejectableTasks.length === 0}
+              />
+              <span className="text-sm text-slate-500">
+                {hrTasks.length} task{hrTasks.length !== 1 ? 's' : ''} found
+              </span>
+            </div>
+          </div>
+          
+          {selectedTasks.length > 0 && (
+            <div className="flex items-center gap-2">
+              <div className="text-sm text-slate-600">
+                {selectedTasks.length} task(s) selected
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-red-200 text-red-600 hover:bg-red-50"
+                onClick={handleBulkReject}
+              >
+                <X size={16} className="mr-1" />
+                Reject Selected
+              </Button>
+              <Button
+                size="sm"
+                className="bg-green-600 hover:bg-green-700"
+                onClick={handleBulkApprove}
+              >
+                <Check size={16} className="mr-1" />
+                Approve Selected
+              </Button>
+            </div>
+          )}
         </div>
         
         <div className="grid gap-4">
@@ -90,11 +169,18 @@ const HrPage = () => {
             return (
               <div key={task.id} className="bg-white border border-slate-200 rounded-lg p-6">
                 <div className="flex justify-between items-start mb-3">
-                  <div>
-                    <h3 className="font-semibold text-lg">{task.title}</h3>
-                    <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-full">
-                      {task.taskType}
-                    </span>
+                  <div className="flex items-start gap-3">
+                    <Checkbox 
+                      checked={selectedTasks.includes(task.id)} 
+                      onCheckedChange={(checked) => handleSelectTask(task.id, !!checked)}
+                      disabled={!canApproveReject}
+                    />
+                    <div>
+                      <h3 className="font-semibold text-lg">{task.title}</h3>
+                      <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-full">
+                        {task.taskType}
+                      </span>
+                    </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className={`text-xs px-2 py-1 rounded-full ${

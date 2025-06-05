@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { fetchRecertificationTasks, RecertificationTask } from '@/data/mockRecertificationTasks';
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Check, X, Eye } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -17,6 +18,7 @@ const RecertificationTasksView = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedTask, setSelectedTask] = useState<RecertificationTask | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
 
   useEffect(() => {
     const loadTasks = async () => {
@@ -38,6 +40,18 @@ const RecertificationTasksView = () => {
     loadTasks();
   }, []);
 
+  const handleSelectTask = (taskId: string, checked: boolean) => {
+    setSelectedTasks(prev => 
+      checked 
+        ? [...prev, taskId]
+        : prev.filter(id => id !== taskId)
+    );
+  };
+
+  const handleSelectAll = (checked: boolean) => {
+    setSelectedTasks(checked ? tasks.map(task => task.id) : []);
+  };
+
   const handleApprove = (taskId: string) => {
     setTasks(prev => prev.filter(task => task.id !== taskId));
     toast('Group approved successfully');
@@ -48,10 +62,28 @@ const RecertificationTasksView = () => {
     toast('Group rejected');
   };
 
+  const handleBulkApprove = () => {
+    if (selectedTasks.length === 0) return;
+    
+    setTasks(prev => prev.filter(task => !selectedTasks.includes(task.id)));
+    toast(`${selectedTasks.length} group(s) approved successfully`);
+    setSelectedTasks([]);
+  };
+
+  const handleBulkReject = () => {
+    if (selectedTasks.length === 0) return;
+    
+    setTasks(prev => prev.filter(task => !selectedTasks.includes(task.id)));
+    toast(`${selectedTasks.length} group(s) rejected`);
+    setSelectedTasks([]);
+  };
+
   const handleViewDetails = (task: RecertificationTask) => {
     setSelectedTask(task);
     setSheetOpen(true);
   };
+
+  const allSelected = tasks.length > 0 && tasks.every(task => selectedTasks.includes(task.id));
 
   if (isLoading) {
     return (
@@ -63,22 +95,64 @@ const RecertificationTasksView = () => {
 
   return (
     <div className="space-y-6">
-      <div className="text-sm text-slate-500">
-        {tasks.length} group{tasks.length !== 1 ? 's' : ''} pending re-certification
+      <div className="flex justify-between items-center">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <Checkbox 
+              checked={allSelected} 
+              onCheckedChange={handleSelectAll}
+              disabled={tasks.length === 0}
+            />
+            <span className="text-sm text-slate-500">
+              {tasks.length} group{tasks.length !== 1 ? 's' : ''} pending re-certification
+            </span>
+          </div>
+        </div>
+        
+        {selectedTasks.length > 0 && (
+          <div className="flex items-center gap-2">
+            <div className="text-sm text-slate-600">
+              {selectedTasks.length} group(s) selected
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              className="border-red-200 text-red-600 hover:bg-red-50"
+              onClick={handleBulkReject}
+            >
+              <X size={16} className="mr-1" />
+              Reject Selected
+            </Button>
+            <Button
+              size="sm"
+              className="bg-green-600 hover:bg-green-700"
+              onClick={handleBulkApprove}
+            >
+              <Check size={16} className="mr-1" />
+              Approve Selected
+            </Button>
+          </div>
+        )}
       </div>
       
       <div className="grid gap-4">
         {tasks.map((task) => (
           <div key={task.id} className="bg-white border border-slate-200 rounded-lg p-6">
             <div className="flex justify-between items-start mb-3">
-              <div>
-                <h3 className="font-semibold text-lg">{task.groupName}</h3>
-                <p className="text-slate-600 text-sm">{task.groupSummary}</p>
-                <span className={`inline-block mt-2 text-xs px-2 py-1 rounded-full ${
-                  task.groupClassification === 'PROD' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'
-                }`}>
-                  {task.groupClassification}
-                </span>
+              <div className="flex items-start gap-3">
+                <Checkbox 
+                  checked={selectedTasks.includes(task.id)} 
+                  onCheckedChange={(checked) => handleSelectTask(task.id, !!checked)} 
+                />
+                <div>
+                  <h3 className="font-semibold text-lg">{task.groupName}</h3>
+                  <p className="text-slate-600 text-sm">{task.groupSummary}</p>
+                  <span className={`inline-block mt-2 text-xs px-2 py-1 rounded-full ${
+                    task.groupClassification === 'PROD' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'
+                  }`}>
+                    {task.groupClassification}
+                  </span>
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 <span className={`text-xs px-2 py-1 rounded-full ${
