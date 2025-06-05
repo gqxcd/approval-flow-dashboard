@@ -85,7 +85,8 @@ const Sidebar = ({ className }: SidebarProps) => {
                 {[
                   { name: "HR", path: "/hr" },
                   { name: "MyIT", path: "/myit" },
-                  { name: "Internal Approval", path: "/internal-approval" }
+                  { name: "Internal Approval", path: "/internal-approval" },
+                  { name: "Re-certification", path: "/recertification" }
                 ].map((item, idx) => (
                   <li key={idx}>
                     <Button
@@ -103,22 +104,6 @@ const Sidebar = ({ className }: SidebarProps) => {
                 ))}
               </ul>
             )}
-          </li>
-          <li>
-            <Button
-              variant="ghost"
-              className={cn(
-                "w-full justify-start px-3 py-2 h-10",
-                collapsed ? "justify-center" : "",
-                location.pathname === "/recertification" && "bg-slate-200 text-slate-900"
-              )}
-              asChild
-            >
-              <Link to="/recertification">
-                <Users size={20} className={collapsed ? "mx-auto" : "mr-2"} />
-                {!collapsed && <span>Re-certification</span>}
-              </Link>
-            </Button>
           </li>
           <li>
             <Button
